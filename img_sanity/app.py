@@ -34,12 +34,17 @@ parser.add_argument(
     '--img_path', default='', type=str,
     help='The path to the images. It is joined with the values in img_column'
 )
+parser.add_argument(
+    '--img_ext', default='', type=str,
+    help='The image extensions, if not part of the image names'
+)
 
 args = parser.parse_args()
 file = args.table
 img_column = args.img_column
 img_path = args.img_path
 img_path = path.abspath(img_path)
+img_ext = args.img_ext
 static_image_route = '/static/'
 
 df = pd.read_csv(file)
@@ -96,6 +101,7 @@ def show_images(rows):
     else:
         _df = pd.DataFrame(rows)
 
+
     images = [
         # html.Img(src=decode_image(path.join(img_path, name)))
         html.Img(src=path.join(static_image_route, name))
@@ -111,7 +117,7 @@ def show_images(rows):
 def serve_image(image_name):
     if image_name not in list_of_images:
         raise Exception('"{}" is excluded from the allowed static files'.format(image_name))
-    return flask.send_from_directory(img_path, image_name)
+    return flask.send_from_directory(img_path, image_name + img_ext)
 
 
 if __name__ == '__main__':
